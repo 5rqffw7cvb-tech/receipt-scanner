@@ -30,22 +30,31 @@ export async function detectReceiptQuad(previewCanvas, params){
   const src = cv.imread(previewCanvas);
   const gray = track(new cv.Mat());
   cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-  const blurred = track(new cv.Mat());
-  cv.GaussianBlur(gray, blurred, new cv.Size(5,5), 0);
-  const edges = track(new cv.Mat());
-  cv.Canny(blurred, edges, canny1, canny2);
-  const kernel = cv.Mat.ones(3, 3, cv.CV_8U);
-  const dilated = track(new cv.Mat());
-  cv.dilate(edges, dilated, kernel);
+  
+  // Adaptive threshold for better edge detection on varying lighting
+  const adaptive = track(new cv.Mat());
+  cv.adaptiveThreshold(gray, adaptive, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
+  
+  // Invert for better contour detection
+  const inverted = track(new cv.Mat());
+  cv.bitwise_not(adaptive, inverted);
+  
+  // Morphological operations to clean up
+  const kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(5, 5));
+  const closed = track(new cv.Mat());
+  cv.morphologyEx(inverted, closed, cv.MORPH_CLOSE, kernel);
+  const opened = track(new cv.Mat());
+  cv.morphologyEx(closed, opened, cv.MORPH_OPEN, kernel);
   kernel.delete();
 
   const contours = new cv.MatVector();
   const hierarchy = new cv.Mat();
-  cv.findContours(dilated, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  cv.findContours(opened, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
   hierarchy.delete();
 
   const imgArea = src.rows * src.cols;
   let bestQuad = null;
+  let bestArea = 0;
   for(let i=0;i<contours.size();i++){
     const cnt = contours.get(i);
     const area = cv.contourArea(cnt);
@@ -58,11 +67,11 @@ export async function detectReceiptQuad(previewCanvas, params){
       for(let j=0; j<4; j++){
         pts.push({x: approx.intPtr(j,0)[0], y: approx.intPtr(j,0)[1]});
       }
-      const ordered = orderQuad(pts);
-      bestQuad = ordered;
-      approx.delete();
-      cnt.delete();
-      break;
+      // Take quad with largest area
+      if(area > bestArea){
+        bestQuad = orderQuad(pts);
+        bestArea = area;
+      }
     }
     approx.delete();
     cnt.delete();
