@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) => ({
-  // Allow overriding base path for GitHub Pages via env
-  base: process.env.BASE_PATH || '/',
+  // GitHub Pages base path
+  base: process.env.BASE_PATH || '/receipt-scanner/',
   server: {
     host: true,
     port: 5173
