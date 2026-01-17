@@ -48,20 +48,23 @@ async function ensureCV(){
 }
 
 async function pickImageFromCamera(){
+  console.log('📷 Camera button clicked');
   fileInput.accept = 'image/*';
   fileInput.capture = 'environment';
   fileInput.click();
 }
 
 async function pickImageFromGallery(){
+  console.log('🖼️ Gallery button clicked');
   fileInput.accept = 'image/*';
   fileInput.capture = '';
   fileInput.click();
 }
 
 async function onFileChange(e){
+  console.log('File selected:', e.target.files);
   const file = e.target.files?.[0];
-  if(!file){ return; }
+  if(!file){ console.log('No file'); return; }
   show(resultSection, false);
   show(adjustControls, false);
   show(outputControls, false);
