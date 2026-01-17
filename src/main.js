@@ -4,9 +4,9 @@ import { compressToTarget } from './compress.js';
 
 const state = {
   targetWidth: 1280, // processing downscale width
-  canny1: 50,
-  canny2: 150,
-  minContourAreaRatio: 0.15, // relative to downscaled image area
+  canny1: 30,  // Lowered from 50 for better edge detection
+  canny2: 100, // Lowered from 150 for better edge detection
+  minContourAreaRatio: 0.08, // Lowered from 0.15 to detect smaller receipts
   jpegQuality: 0.75,
   sizeLimitKB: 500,
   maxOutputWidth: 1600,
