@@ -20,7 +20,8 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 const statusEl = $('status');
-const fileInput = $('fileInput');
+const cameraInput = $('cameraInput');
+const galleryInput = $('galleryInput');
 const cameraBtn = $('cameraBtn');
 const galleryBtn = $('galleryBtn');
 const previewCanvas = $('previewCanvas');
@@ -48,23 +49,16 @@ async function ensureCV(){
 }
 
 async function pickImageFromCamera(){
-  console.log('📷 Camera button clicked');
-  fileInput.accept = 'image/*';
-  fileInput.capture = 'environment';
-  fileInput.click();
+  cameraInput.click();
 }
 
 async function pickImageFromGallery(){
-  console.log('🖼️ Gallery button clicked');
-  fileInput.accept = 'image/*';
-  fileInput.capture = '';
-  fileInput.click();
+  galleryInput.click();
 }
 
 async function onFileChange(e){
-  console.log('File selected:', e.target.files);
   const file = e.target.files?.[0];
-  if(!file){ console.log('No file'); return; }
+  if(!file){ return; }
   show(resultSection, false);
   show(adjustControls, false);
   show(outputControls, false);
@@ -183,7 +177,8 @@ function resetCornersAction(){
 // Events
 cameraBtn.addEventListener('click', pickImageFromCamera);
 galleryBtn.addEventListener('click', pickImageFromGallery);
-fileInput.addEventListener('change', onFileChange);
+cameraInput.addEventListener('change', onFileChange);
+galleryInput.addEventListener('change', onFileChange);
 applyCrop.addEventListener('click', applyCropAction);
 qualitySlider.addEventListener('input', updateQuality);
 downloadBtn.addEventListener('click', downloadJPG);

@@ -14,7 +14,8 @@
 
       <main>
         <section class="controls">
-          <input id="fileInput" type="file" accept="image/*" hidden />
+          <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
+          <input id="galleryInput" type="file" accept="image/*" hidden />
           <button id="cameraBtn" class="primary">📷 Chụp ảnh</button>
           <button id="galleryBtn" class="secondary">🖼️ Chọn ảnh</button>
           <div id="status" class="status">Idle</div>
