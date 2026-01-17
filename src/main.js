@@ -40,6 +40,19 @@ const backBtn = $('backBtn');
 function setStatus(s){ statusEl.textContent = s; }
 function show(section, visible){ section.classList.toggle('hidden', !visible); }
 
+// Load version from package.json
+async function initVersion(){
+  try {
+    const res = await fetch('/package.json');
+    const pkg = await res.json();
+    document.getElementById('version').textContent = 'v' + pkg.version;
+  } catch(e) {
+    console.log('Could not load version');
+  }
+}
+
+initVersion();
+
 async function ensureCV(){
   if(state.cvReady) return;
   setStatus('Loading OpenCV…');
@@ -62,10 +75,11 @@ async function onFileChange(e){
   show(resultSection, false);
   show(adjustControls, false);
   show(outputControls, false);
+  show(previewSection, true);
 
   await ensureCV();
 
-  setStatus('Processing…');
+  setStatus('Xử lý…');
   const img = await createImageBitmap(file);
   state.imageBitmap = img;
 
@@ -110,7 +124,7 @@ async function onFileChange(e){
   if(quadDown){
     setQuad(quadDown);
     state.quadPreview = quadDown;
-    setStatus('Preview detected. Adjust if needed.');
+    setStatus('Đã phát hiện. Chỉnh nếu cần.');
   } else {
     // Fallback to bounding box corners
     const bb = [
@@ -118,7 +132,7 @@ async function onFileChange(e){
     ];
     setQuad(bb);
     state.quadPreview = bb;
-    setStatus('Không tìm thấy biên hóa đơn, vui lòng chỉnh tay.');
+    setStatus('Không tìm được biên, vui lòng chỉnh tay.');
   }
 
   show(adjustControls, true);
@@ -127,7 +141,7 @@ async function onFileChange(e){
 async function applyCropAction(){
   const quadDown = getQuad();
   state.quadPreview = quadDown;
-  setStatus('Cropping…');
+  setStatus('Đang cắt…');
   const { canvas } = await warpFromQuadOnOriginal(state.originalCanvas, quadDown, {
     scalePreviewToOriginal: 1 / state.scale,
     maxOutputWidth: state.maxOutputWidth
@@ -140,8 +154,8 @@ async function applyCropAction(){
   resultImg.src = url;
   show(resultSection, true);
   show(outputControls, true);
-  sizeInfo.textContent = `Size: ${Math.round(blobInfo.size/1024)}KB, quality: ${blobInfo.quality.toFixed(2)}, width: ${canvas.width}`;
-  setStatus('Result preview');
+  sizeInfo.textContent = `Kích thước: ${Math.round(blobInfo.size/1024)}KB | Chất lượng: ${blobInfo.quality.toFixed(2)} | Rộng: ${canvas.width}px`;
+  setStatus('Hoàn thành');
 }
 
 async function updateQuality(){
@@ -150,7 +164,7 @@ async function updateQuality(){
   const blobInfo = await compressToTarget(state.croppedCanvas, state.jpegQuality, state.sizeLimitKB, state.maxOutputWidth);
   const url = URL.createObjectURL(blobInfo.blob);
   resultImg.src = url;
-  sizeInfo.textContent = `Size: ${Math.round(blobInfo.size/1024)}KB, quality: ${blobInfo.quality.toFixed(2)}, width: ${state.croppedCanvas.width}`;
+  sizeInfo.textContent = `Kích thước: ${Math.round(blobInfo.size/1024)}KB | Chất lượng: ${blobInfo.quality.toFixed(2)} | Rộng: ${state.croppedCanvas.width}px`;
 }
 
 async function downloadJPG(){
@@ -185,4 +199,4 @@ downloadBtn.addEventListener('click', downloadJPG);
 backBtn.addEventListener('click', backToAdjust);
 resetCorners.addEventListener('click', resetCornersAction);
 
-setStatus('Idle');
+setStatus('Sẵn sàng');
