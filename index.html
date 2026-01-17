@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Scan Hóa Đơn</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Scan Hóa Đơn</h1>
+      </header>
+
+      <main>
+        <section class="controls">
+          <input id="fileInput" type="file" accept="image/*" capture="environment" hidden />
+          <button id="pickBtn" class="primary">Chụp / Chọn ảnh</button>
+          <div id="status" class="status">Idle</div>
+        </section>
+
+        <section id="previewSection" class="preview">
+          <div class="canvas-wrap">
+            <canvas id="previewCanvas"></canvas>
+            <canvas id="overlayCanvas"></canvas>
+          </div>
+        </section>
+
+        <section id="resultSection" class="result hidden">
+          <img id="resultImg" alt="Kết quả" />
+        </section>
+
+        <section id="adjustControls" class="adjust hidden">
+          <div class="row">
+            <button id="resetCorners" class="secondary">Reset corners</button>
+            <button id="applyCrop" class="primary">Apply crop</button>
+            <button id="backBtn" class="secondary">Back</button>
+          </div>
+        </section>
+
+        <section id="outputControls" class="output hidden">
+          <div class="row">
+            <label>Quality
+              <input id="qualitySlider" type="range" min="0.4" max="0.95" step="0.05" value="0.75" />
+            </label>
+            <button id="downloadBtn" class="primary">Download JPG</button>
+          </div>
+          <div id="sizeInfo" class="size-info"></div>
+        </section>
+      </main>
+
+      <footer>
+        <small>Client-side processing • OpenCV.js (lazy)</small>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
