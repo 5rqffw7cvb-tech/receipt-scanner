@@ -21,7 +21,8 @@ const state = {
 const $ = (id) => document.getElementById(id);
 const statusEl = $('status');
 const fileInput = $('fileInput');
-const pickBtn = $('pickBtn');
+const cameraBtn = $('cameraBtn');
+const galleryBtn = $('galleryBtn');
 const previewCanvas = $('previewCanvas');
 const overlayCanvas = $('overlayCanvas');
 const resultSection = $('resultSection');
@@ -46,7 +47,15 @@ async function ensureCV(){
   setStatus('OpenCV ready');
 }
 
-async function pickImage(){
+async function pickImageFromCamera(){
+  fileInput.accept = 'image/*';
+  fileInput.capture = 'environment';
+  fileInput.click();
+}
+
+async function pickImageFromGallery(){
+  fileInput.accept = 'image/*';
+  fileInput.capture = '';
   fileInput.click();
 }
 
@@ -169,7 +178,8 @@ function resetCornersAction(){
 }
 
 // Events
-pickBtn.addEventListener('click', pickImage);
+cameraBtn.addEventListener('click', pickImageFromCamera);
+galleryBtn.addEventListener('click', pickImageFromGallery);
 fileInput.addEventListener('change', onFileChange);
 applyCrop.addEventListener('click', applyCropAction);
 qualitySlider.addEventListener('input', updateQuality);
